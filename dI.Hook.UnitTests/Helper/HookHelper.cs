@@ -9,9 +9,9 @@ namespace dIHook.UnitTests.Helper
 {
     public static class HookHelper
     {
-        public static IHookRepository<T> GetRepository<T>() where T : IHook
+        public static IHookRepository<T> GetRepository<T>(bool lazyLoad = false) where T : IHook
         {
-            return HookRepositoryFactory.Create<T>();
+            return HookRepositoryFactory.Create<T>(lazyLoad);
         }
     }
 }

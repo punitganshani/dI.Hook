@@ -8,9 +8,12 @@ namespace dIHook.Builder
 {
     public class HookRepositoryFactory
     {
-        public static IHookRepository<T> Create<T>() where T: IHook
+        public static IHookRepository<T> Create<T>(bool lazyLoad = false) where T : IHook
         {
-            return new HookRepository<T>();
+            if (lazyLoad)
+                return new LazyHookRepository<T>();
+            else
+                return new HookRepository<T>();
         }
     }
 }

@@ -8,9 +8,9 @@ using dIHook.Objects;
 
 namespace dIHook.Utilities
 {
-    public static class HookExtensions
+    internal static class HookExtensions
     {
-        public static Func<T, bool> FormatSearchClause<T>(SearchBy searchBy, Operator op, string searchText) where T : IHook
+        internal static Func<T, bool> FormatSearchClause<T>(SearchBy searchBy, Operator op, string searchText) where T : IHook
         {
             // default value of the predicate
             Func<T, bool> predicate = new Func<T, bool>(x => true);
@@ -44,7 +44,7 @@ namespace dIHook.Utilities
             return predicate;
         }
 
-        public static List<T> GetHooksForCurrentMethod<T>(this HookRepository<T> repository) where T : IHook
+        internal static List<T> GetHooksForCurrentMethod<T>(this HookRepository<T> repository) where T : IHook
         {
             int level = 3;
             if (ReflectionHelper.GetAttributeIfAny<RemoveAllHooks>(level))
@@ -76,6 +76,42 @@ namespace dIHook.Utilities
                 var removeHooksTypes = ReflectionHelper.GetAttributeHookType<RemoveHookType, T>(level);
                 foreach (var item in removeHooksTypes)
                     source.RemoveAll(x => x.GetType() == item.GetType());
+            }
+            return source;
+        }
+
+        internal static List<Lazy<T>> GetHooksForCurrentMethodLazy<T>(this LazyHookRepository<T> repository) where T : IHook
+        {
+            int level = 3;
+            if (ReflectionHelper.GetAttributeIfAny<RemoveAllHooks>(level))
+                return new List<Lazy<T>>();
+
+            List<Lazy<T>> source = repository.LazyHooks;
+
+            if (ReflectionHelper.GetAttributeIfAny<AddHookType>(level))
+            {
+                var addHooks = ReflectionHelper.GetAttributeHookTypeLazy<AddHookType, T>(level);
+                source.AddRange(addHooks);
+            }
+
+            if (ReflectionHelper.GetAttributeIfAny<RemoveHook>(level))
+            {
+                var removeHooks = ReflectionHelper.GetAttributeOfType<RemoveHook>(level).Where(x => x.HookName != null);
+                List<string> removeNames = new List<string>();
+                foreach (var item in removeHooks)
+                {
+                    if (item.HookName != null)
+                        removeNames.AddRange(item.HookName);
+                }
+                if (removeNames.Count != 0)
+                    source.RemoveAll(x => x.IsValueCreated && removeNames.Contains(x.Value.Name));
+            }
+
+            if (ReflectionHelper.GetAttributeIfAny<RemoveHookType>(level))
+            {
+                var removeHooksTypes = ReflectionHelper.GetAttributeHookTypeLazy<RemoveHookType, T>(level);
+                foreach (var item in removeHooksTypes)
+                    source.RemoveAll(x => x.IsValueCreated && x.GetType() == item.GetType());
             }
             return source;
         }

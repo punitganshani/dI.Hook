@@ -10,7 +10,7 @@ namespace dIHook.Utilities
 {
     public static class AssemblyExtensions
     {
-        public static List<T> GetHooks<T>(this Assembly assembly, Func<T, bool> predicate) where T: IHook
+        public static List<T> GetHooks<T>(this Assembly assembly, Func<T, bool> predicate) where T : IHook
         {
             List<T> hooks = new List<T>();
 
@@ -19,10 +19,34 @@ namespace dIHook.Utilities
                 var types = assembly.GetTypes().Where(x => x.GetInterface("IHook", true) != null);
                 foreach (var item in types)
                 {
-                    var hook = (T) Activator.CreateInstance(item);
+                    var hook = (T)Activator.CreateInstance(item);
                     if (predicate.Invoke(hook))
                     {
                         hooks.Add(hook);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return hooks;
+        }
+
+        public static List<Lazy<T>> GetHooksLazy<T>(this Assembly assembly, Func<T, bool> predicate) where T : IHook
+        {
+            List<Lazy<T>> hooks = new List<Lazy<T>>();
+
+            try
+            {
+                var types = assembly.GetTypes().Where(x => x.GetInterface("IHook", true) != null);
+                foreach (var item in types)
+                {
+                    var hook = (T)Activator.CreateInstance(item);
+                    if (predicate.Invoke(hook))
+                    {
+                        hooks.Add(new Lazy<T>(() => { return hook; }));
                     }
                 }
             }

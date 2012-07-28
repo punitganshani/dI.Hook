@@ -7,14 +7,9 @@ using dIHook.Objects;
 
 namespace dIHook.Utilities
 {
-    public class HookDictionary<T> : Dictionary<Guid, T>, IDisposable
-                                    where T: IHook
+    public class LazyDictionary<T> : Dictionary<Guid, Lazy<T>>, IDisposable
+                                    where T : IHook
     {
-        public HookDictionary()
-        {
-            
-        }
-
         public void Add(T currentHook)
         {
             if (this.ContainsKey(currentHook.Id) == false)
@@ -23,7 +18,8 @@ namespace dIHook.Utilities
                 {
                     if (this.ContainsKey(currentHook.Id) == false)
                     {
-                        this.Add(currentHook.Id, currentHook);
+                        var lazyObject = new Lazy<T>(() => { return currentHook; });
+                        this.Add(currentHook.Id, lazyObject);
                         currentHook.OnAdded();
                     }
                 }
@@ -57,7 +53,8 @@ namespace dIHook.Utilities
                     {
                         if (this.ContainsKey(currentHook.Id) == false)
                         {
-                            this.Add(currentHook.Id, currentHook);
+                            var lazyObject = new Lazy<T>(() => { return currentHook; });
+                            this.Add(currentHook.Id, lazyObject);
                             currentHook.OnAdded();
                         }
                     }
@@ -85,15 +82,15 @@ namespace dIHook.Utilities
 
         public void Dispose()
         {
-            foreach (var item in this.Keys)
+            foreach (var item in Keys)
             {
-                using (this[item]) ;
+                using (this[item].Value) ;
             }
         }
 
         internal void ClearAll()
         {
-            this.Clear();
-        }        
+            Clear();
+        }
     }
 }
