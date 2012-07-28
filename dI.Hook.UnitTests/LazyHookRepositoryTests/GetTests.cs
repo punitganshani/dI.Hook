@@ -4,7 +4,7 @@ using dIHook.Objects;
 using dIHook.UnitTests.Helper;
 using dIHook.UnitTests.Hooks;
 
-namespace dIHook.UnitTests
+namespace dIHook.UnitTests.LazyHookRepositoryTests
 {
     [TestClass]
     public class GetTests
@@ -14,27 +14,27 @@ namespace dIHook.UnitTests
         [TestInitialize()]
         public void MyTestInitialize()
         {
-            hookRepository = HookHelper.GetRepository<IHook>();
+            hookRepository = HookHelper.GetRepository<IHook>(true);
             hookRepository.Add(typeof(LogHook));
             hookRepository.Add(typeof(DiagnosticsHook));
         }
 
         [TestMethod]
-        public void Test_GetHookByType()
+        public void Test_Lazy_GetHookByType()
         {
             var hooksRetrieved = hookRepository.Get(x => x.GetType() == typeof(LogHook));
             Assert.AreEqual(1, hooksRetrieved.Length);
         }
 
         [TestMethod]
-        public void Test_GetHookByName()
+        public void Test_Lazy_GetHookByName()
         {
             var hooksRetrieved = hookRepository.Get(x => x.Name != null && x.Name.Contains("Log"));
             Assert.AreEqual(1, hooksRetrieved.Length);
         }
 
         [TestMethod]
-        public void Test_GetAllHooks()
+        public void Test_Lazy_GetAllHooks()
         {
             var hooksRetrieved = hookRepository.Hooks;
             Assert.AreEqual(2, hooksRetrieved.Length);

@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Builder\LazyHookRepository.cs" />
     <Compile Include="Objects\Attributes\AddHookType.cs" />
+    <Compile Include="Objects\Attributes\HookIdentifier.cs" />
     <Compile Include="Objects\Attributes\RemoveHook.cs" />
     <Compile Include="Objects\Attributes\HookAttribute.cs" />
     <Compile Include="Objects\Attributes\RemoveAllHooks.cs" />

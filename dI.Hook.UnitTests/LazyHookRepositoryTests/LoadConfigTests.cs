@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using dIHook.Objects;
 using dIHook.UnitTests.Helper;
 
-namespace dIHook.UnitTests
+namespace dIHook.UnitTests.LazyHookRepositoryTests
 {
     [TestClass]
     public class LoadConfigTests
@@ -13,11 +13,11 @@ namespace dIHook.UnitTests
         [TestInitialize()]
         public void MyTestInitialize()
         {
-            hookRepository = HookHelper.GetRepository<IHook>();
+            hookRepository = HookHelper.GetRepository<IHook>(true);
         }
 
         [TestMethod]
-        public void Test_LoadFromConfigFile()
+        public void Test_Lazy_LoadFromConfigFile()
         {
             hookRepository.RemoveAll();
             hookRepository.LoadConfiguration();
@@ -26,7 +26,7 @@ namespace dIHook.UnitTests
         }
 
         [TestMethod]
-        public void Test_LoadFromConfigFileWithRepositoryName()
+        public void Test_Lazy_LoadFromConfigFileWithRepositoryName()
         {
             hookRepository.RemoveAll();
             hookRepository.LoadConfiguration("dIHookConfiguration", "productionRepository");
@@ -35,7 +35,7 @@ namespace dIHook.UnitTests
         }
 
         [TestMethod]
-        public void Test_LoadFromConfigFileWithRepositoryNameDisabled()
+        public void Test_Lazy_LoadFromConfigFileWithRepositoryNameDisabled()
         {
             hookRepository.RemoveAll();
             hookRepository.LoadConfiguration("dIHookConfiguration", "productionRepositoryDisabled");

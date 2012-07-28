@@ -56,11 +56,15 @@
     <Compile Include="Helper\HookHelper.cs" />
     <Compile Include="Hooks\DiagnosticsHook.cs" />
     <Compile Include="Hooks\LogHook.cs" />
+    <Compile Include="LazyHookRepositoryTests\AddHookTests.cs" />
+    <Compile Include="LazyHookRepositoryTests\GetTests.cs" />
+    <Compile Include="LazyHookRepositoryTests\LoadConfigTests.cs" />
+    <Compile Include="LazyHookRepositoryTests\RemoveHookTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AddHookTests.cs" />
-    <Compile Include="LoadConfigTests.cs" />
-    <Compile Include="RemoveHookTests.cs" />
-    <Compile Include="GetTests.cs" />
+    <Compile Include="HookRepositoryTests\AddHookTests.cs" />
+    <Compile Include="HookRepositoryTests\LoadConfigTests.cs" />
+    <Compile Include="HookRepositoryTests\RemoveHookTests.cs" />
+    <Compile Include="HookRepositoryTests\GetTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\dI.Hook\dI.Hook.csproj">
@@ -71,6 +75,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

@@ -10,17 +10,38 @@ namespace dIHook.Utilities
     public class LazyDictionary<T> : Dictionary<Guid, Lazy<T>>, IDisposable
                                     where T : IHook
     {
-        public void Add(T currentHook)
+        public void Add(Type type)
         {
-            if (this.ContainsKey(currentHook.Id) == false)
+            Guid id = Guid.Empty;
+            if (type.HasIdentifierAttribute() == false)
+                throw new NotImplementedException("Hook does not have a HookIdentifier attribute which is necessary for Lazy loading when adding a Type");
+            else
+                id = type.GetHookIdenfier();
+
+            if (this.ContainsKey(id) == false)
             {
                 lock (this)
                 {
-                    if (this.ContainsKey(currentHook.Id) == false)
+                    if (this.ContainsKey(id) == false)
+                    {
+                        var lazyObject = new Lazy<T>(() => { return (T)Activator.CreateInstance(type); });
+                        this.Add(id, lazyObject);
+                    }
+                }
+            }
+        }
+
+        public void Add(T currentHook)
+        {
+            Guid id = currentHook.GetIdOfHook();
+            if (this.ContainsKey(id) == false)
+            {
+                lock (this)
+                {
+                    if (this.ContainsKey(id) == false)
                     {
                         var lazyObject = new Lazy<T>(() => { return currentHook; });
-                        this.Add(currentHook.Id, lazyObject);
-                        currentHook.OnAdded();
+                        this.Add(id, lazyObject);
                     }
                 }
             }
@@ -28,16 +49,15 @@ namespace dIHook.Utilities
 
         public void Remove(T currentHook)
         {
-            if (this.ContainsKey(currentHook.Id))
+            Guid id = currentHook.GetIdOfHook();
+
+            if (this.ContainsKey(id))
             {
                 lock (this)
                 {
-                    if (this.ContainsKey(currentHook.Id))
+                    if (this.ContainsKey(id))
                     {
-                        if (this.Remove(currentHook.Id))
-                        {
-                            currentHook.OnRemoved();
-                        }
+                        if (this.Remove(id)) { }
                     }
                 }
             }
@@ -47,15 +67,16 @@ namespace dIHook.Utilities
         {
             foreach (var currentHook in hooks)
             {
-                if (this.ContainsKey(currentHook.Id) == false)
+                Guid id = currentHook.GetIdOfHook();
+
+                if (this.ContainsKey(id) == false)
                 {
                     lock (this)
                     {
-                        if (this.ContainsKey(currentHook.Id) == false)
+                        if (this.ContainsKey(id) == false)
                         {
                             var lazyObject = new Lazy<T>(() => { return currentHook; });
-                            this.Add(currentHook.Id, lazyObject);
-                            currentHook.OnAdded();
+                            this.Add(id, lazyObject);
                         }
                     }
                 }
@@ -66,14 +87,15 @@ namespace dIHook.Utilities
         {
             foreach (var currentHook in hooks)
             {
-                if (this.ContainsKey(currentHook.Id))
+                Guid id = currentHook.GetIdOfHook();
+
+                if (this.ContainsKey(id))
                 {
                     lock (this)
                     {
-                        if (this.ContainsKey(currentHook.Id))
+                        if (this.ContainsKey(id))
                         {
-                            if (this.Remove(currentHook.Id))
-                                currentHook.OnRemoved();
+                            if (this.Remove(id)) { }
                         }
                     }
                 }

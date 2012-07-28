@@ -7,7 +7,7 @@ using dIHook.Objects;
 using dIHook.UnitTests.Helper;
 using dIHook.UnitTests.Hooks;
 
-namespace dIHook.UnitTests
+namespace dIHook.UnitTests.HookRepositoryTests
 {
     [TestClass]
     public class RemoveHookTests
@@ -23,7 +23,7 @@ namespace dIHook.UnitTests
 
         [TestMethod]
         [RemoveAllHooks]
-        public void Test_RemoveHooks()
+        public void Test_Standard_RemoveHooks()
         {
             int invokedHooks = hookRepository.InvokeAll();
             Assert.AreEqual(0, invokedHooks);
@@ -31,7 +31,7 @@ namespace dIHook.UnitTests
 
         [TestMethod]
         [RemoveHook(new[] { "LogHook" })]
-        public void Test_RemoveHooksWithName()
+        public void Test_Standard_RemoveHooksWithName()
         {
             int invokedHooks = hookRepository.InvokeAll();
 
@@ -40,7 +40,7 @@ namespace dIHook.UnitTests
 
         [TestMethod]
         [RemoveHook(new[] { "LogHook", "DiagnosticsHook" })]
-        public void Test_RemoveHooksWithName_MultipleHooks()
+        public void Test_Standard_RemoveHooksWithName_MultipleHooks()
         {
             int invokedHooks = hookRepository.InvokeAll();
             Assert.AreEqual(0, invokedHooks);
@@ -49,7 +49,7 @@ namespace dIHook.UnitTests
         [TestMethod]
         [RemoveHook("LogHook")]
         [RemoveHook("DiagnosticsHook")]
-        public void Test_RemoveHooksWithName_MultipleAttributesInMethod()
+        public void Test_Standard_RemoveHooksWithName_MultipleAttributesInMethod()
         {
             int invokedHooks = hookRepository.InvokeAll();
             Assert.AreEqual(0, invokedHooks);
@@ -57,31 +57,31 @@ namespace dIHook.UnitTests
 
         [TestMethod]
         [RemoveHookType(typeof(LogHook))]
-        public void Test_RemoveHooksWithType()
+        public void Test_Standard_RemoveHooksWithType()
         {
             int invokedHooks = hookRepository.InvokeAll();
-            Assert.AreEqual(invokedHooks, hookRepository.Hooks.Length- 1);
+            Assert.AreEqual(hookRepository.Hooks.Length - 1, invokedHooks);
         }
 
         [TestMethod]
         [RemoveHookType(typeof(LogHook))]
         [RemoveHookType(typeof(DiagnosticsHook))]
         [RemoveHookType(typeof(LogHook))]
-        public void Test_AddRemoveHookCombination()
+        public void Test_Standard_AddRemoveHookCombination()
         {
             int invokedHooks = hookRepository.InvokeAll();
-            Assert.AreEqual(invokedHooks, 1);
+            Assert.AreEqual(0, invokedHooks);
         }
 
         [TestMethod]
-        public void Test_RemoveHookObject()
+        public void Test_Standard_RemoveHookObject()
         {
             hookRepository.Remove(new LogHook());
             Assert.AreEqual(1, hookRepository.Hooks.Length);
         }
 
         [TestMethod]
-        public void Test_RemoveHookList()
+        public void Test_Standard_RemoveHookList()
         {
             hookRepository.Remove(new List<IHook> { new LogHook(), new DiagnosticsHook() });
 
@@ -89,7 +89,7 @@ namespace dIHook.UnitTests
         }
 
         [TestMethod]
-        public void Test_RemoveHookArray()
+        public void Test_Standard_RemoveHookArray()
         {
             hookRepository.Remove(new IHook[] { new LogHook(), new DiagnosticsHook() });
 
@@ -97,7 +97,7 @@ namespace dIHook.UnitTests
         }
 
         [TestMethod]
-        public void Test_RemoveHookType()
+        public void Test_Standard_RemoveHookType()
         {
             hookRepository.Remove(typeof(LogHook));
             hookRepository.Remove(typeof(DiagnosticsHook));

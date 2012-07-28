@@ -7,7 +7,7 @@ using dIHook.Objects;
 using dIHook.UnitTests.Helper;
 using dIHook.UnitTests.Hooks;
 
-namespace dIHook.UnitTests
+namespace dIHook.UnitTests.LazyHookRepositoryTests
 {
     [TestClass]
     public class AddHookTests
@@ -17,18 +17,18 @@ namespace dIHook.UnitTests
         [TestInitialize()]
         public void MyTestInitialize()
         {
-            hookRepository = HookHelper.GetRepository<IHook>();
+            hookRepository = HookHelper.GetRepository<IHook>(true);
         }
 
         [TestMethod]
-        public void Test_AddHookObject()
+        public void Test_Lazy_AddHookObject()
         {
             hookRepository.Add(new LogHook());
             Assert.AreEqual(1, hookRepository.Hooks.Length);
         }
 
         [TestMethod]
-        public void Test_AddHookList()
+        public void Test_Lazy_AddHookList()
         {
             hookRepository.Add(new List<IHook> { new LogHook(), new DiagnosticsHook()}) ;
 
@@ -36,7 +36,7 @@ namespace dIHook.UnitTests
         }
 
         [TestMethod]
-        public void Test_AddHookArray()
+        public void Test_Lazy_AddHookArray()
         {
             hookRepository.Add(new IHook [] { new LogHook(), new DiagnosticsHook() });
 
@@ -44,7 +44,7 @@ namespace dIHook.UnitTests
         }
 
         [TestMethod]
-        public void Test_AddHookType()
+        public void Test_Lazy_AddHookType()
         {
             hookRepository.Add(typeof(LogHook));
             hookRepository.Add(typeof(DiagnosticsHook));
@@ -53,7 +53,7 @@ namespace dIHook.UnitTests
         }
 
         [TestMethod]
-        public void Test_AddSameHookWithDifferentGuid()
+        public void Test_Lazy_AddSameHookWithDifferentGuid()
         {
             LogHook logHook1 = new LogHook(); /* Default Guid */
             LogHook logHook2 = new LogHook();
@@ -65,7 +65,7 @@ namespace dIHook.UnitTests
         }
 
         [TestMethod]
-        public void Test_AddSameHookWithDifferentName()
+        public void Test_Lazy_AddSameHookWithDifferentName()
         {
             LogHook logHook1 = new LogHook(); /* Default Guid, Name */
             LogHook logHook2 = new LogHook();
@@ -77,7 +77,7 @@ namespace dIHook.UnitTests
         }
 
         [TestMethod]
-        public void Test_AddHookBySearch()
+        public void Test_Lazy_AddHookBySearch()
         {
             hookRepository.Add(SearchScope.CallingAssembly, SearchBy.Name, Operator.Like, "Log");
             Assert.AreEqual(1, hookRepository.Hooks.Length);
@@ -85,7 +85,7 @@ namespace dIHook.UnitTests
 
         [TestMethod]
         [AddHookType(typeof(LogHook))]
-        public void Test_AddHookByAttribute()
+        public void Test_Lazy_AddHookByAttribute()
         {
             hookRepository.Rebuild();
             Assert.AreEqual(1, hookRepository.Hooks.Length);

@@ -4,44 +4,49 @@ using System.Linq;
 using System.Text;
 using dIHook.Builder;
 using dIHook.Objects;
+using dIHook.Objects.Attributes;
 
 namespace dIHook.Utilities
 {
     public class HookDictionary<T> : Dictionary<Guid, T>, IDisposable
-                                    where T: IHook
+                                    where T : IHook
     {
+        private Type _typeT;
+
         public HookDictionary()
         {
-            
+            _typeT = typeof(T);
         }
 
         public void Add(T currentHook)
         {
-            if (this.ContainsKey(currentHook.Id) == false)
+            if (currentHook == null) return;
+
+            Guid id = currentHook.GetIdOfHook();
+
+            if (this.ContainsKey(id) == false)
             {
                 lock (this)
                 {
                     if (this.ContainsKey(currentHook.Id) == false)
                     {
                         this.Add(currentHook.Id, currentHook);
-                        currentHook.OnAdded();
                     }
                 }
             }
         }
+              
 
         public void Remove(T currentHook)
         {
-            if (this.ContainsKey(currentHook.Id))
+            Guid id = currentHook.GetIdOfHook();
+            if (this.ContainsKey(id))
             {
                 lock (this)
                 {
-                    if (this.ContainsKey(currentHook.Id))
+                    if (this.ContainsKey(id))
                     {
-                        if (this.Remove(currentHook.Id))
-                        {
-                            currentHook.OnRemoved();
-                        }
+                        if (this.Remove(id)) { }
                     }
                 }
             }
@@ -51,14 +56,14 @@ namespace dIHook.Utilities
         {
             foreach (var currentHook in hooks)
             {
-                if (this.ContainsKey(currentHook.Id) == false)
+                Guid id = currentHook.GetIdOfHook();
+                if (this.ContainsKey(id) == false)
                 {
                     lock (this)
                     {
-                        if (this.ContainsKey(currentHook.Id) == false)
+                        if (this.ContainsKey(id) == false)
                         {
-                            this.Add(currentHook.Id, currentHook);
-                            currentHook.OnAdded();
+                            this.Add(id, currentHook);
                         }
                     }
                 }
@@ -69,14 +74,14 @@ namespace dIHook.Utilities
         {
             foreach (var currentHook in hooks)
             {
-                if (this.ContainsKey(currentHook.Id))
+                Guid id = currentHook.GetIdOfHook();
+                if (this.ContainsKey(id))
                 {
                     lock (this)
                     {
-                        if (this.ContainsKey(currentHook.Id))
+                        if (this.ContainsKey(id))
                         {
-                            if (this.Remove(currentHook.Id))
-                                currentHook.OnRemoved();
+                            if (this.Remove(id)) { }
                         }
                     }
                 }
@@ -94,6 +99,6 @@ namespace dIHook.Utilities
         internal void ClearAll()
         {
             this.Clear();
-        }        
+        }
     }
 }

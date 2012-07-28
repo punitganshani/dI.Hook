@@ -53,8 +53,7 @@ namespace dIHook.Builder
             if (type.GetInterface("IHook") == null)
                 throw new InvalidCastException("Invalid data type.");
 
-            var obj = (T) Activator.CreateInstance(type);
-            _hook.Add(obj);
+            _hook.Add(type);
         }
 
         public void Add(SearchScope scope, SearchBy searchBy, Operator op, string searchText)
@@ -112,7 +111,7 @@ namespace dIHook.Builder
                             var hookList = repository.Hooks.ToList();
                             hookList.ForEach(x =>
                             {
-                                Add(x.CreateInstance<T>());
+                                _hook.Add(x.GetHookType());
                             });
                         }
                         catch (Exception)
@@ -181,7 +180,7 @@ namespace dIHook.Builder
         public int InvokeWhen(Func<bool> predicate, Func<T, bool> hookPredicate)
         {
             List<Lazy<T>> hookForThisInstance = HookExtensions.GetHooksForCurrentMethodLazy(this);
- 
+
             int count = 0;
             // If predicate evaluates to 'true' execute the OnInvoke method
             if (predicate.Invoke())
@@ -211,12 +210,12 @@ namespace dIHook.Builder
 
         public void Remove(IEnumerable<T> hooks)
         {
-            _hook.Remove(hooks); 
+            _hook.Remove(hooks);
         }
 
         public void Remove(T[] hooks)
         {
-            _hook.Remove(hooks); 
+            _hook.Remove(hooks);
         }
 
         public void Remove(Type type)
@@ -245,7 +244,7 @@ namespace dIHook.Builder
             if (type.GetInterface("IHook") == null)
                 throw new InvalidCastException("Only data types inheriting from IHook are permitted in this repository");
 
-            List<Lazy<T>> hookForThisInstance = HookExtensions.GetHooksForCurrentMethodLazy(this);        
+            List<Lazy<T>> hookForThisInstance = HookExtensions.GetHooksForCurrentMethodLazy(this);
             List<T> hookObjects = new List<T>();
             foreach (var hook in hookForThisInstance)
             {

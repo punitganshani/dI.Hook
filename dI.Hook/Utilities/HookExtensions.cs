@@ -104,16 +104,43 @@ namespace dIHook.Utilities
                         removeNames.AddRange(item.HookName);
                 }
                 if (removeNames.Count != 0)
-                    source.RemoveAll(x => x.IsValueCreated && removeNames.Contains(x.Value.Name));
+                    source.RemoveAll(x => removeNames.Contains(x.Value.Name));
             }
 
             if (ReflectionHelper.GetAttributeIfAny<RemoveHookType>(level))
             {
                 var removeHooksTypes = ReflectionHelper.GetAttributeHookTypeLazy<RemoveHookType, T>(level);
                 foreach (var item in removeHooksTypes)
-                    source.RemoveAll(x => x.IsValueCreated && x.GetType() == item.GetType());
+                {
+                    if (item.Value != null)
+                    {
+                        Type itemType = item.Value.GetType();
+                        source.RemoveAll(x => x.Value.GetType() == itemType);
+                    }
+                }
             }
             return source;
+        }
+
+        internal static Guid GetIdOfHook(this IHook currentHook)
+        {
+            Guid id = Guid.Empty;
+
+            if (currentHook.Id != Guid.Empty) // first try to get the Id within instance
+                id = currentHook.Id;
+            else // if not found, take the attribute value
+            {
+                Type type = currentHook.GetType();
+                if (type.HasIdentifierAttribute() == false)
+                {
+                    throw new NotImplementedException("Hook neither has a HookIdentifier attribute, nor its Id property is set.  One of this mandatory for standard HookRepository");
+                }
+                else
+                {
+                    id = type.GetHookIdenfier();
+                }
+            }
+            return id;
         }
     }
 }

@@ -10,8 +10,6 @@ namespace dIHook.Objects
         string Name { get; set; }
         Guid Id { get; set; }
 
-        void OnAdded();
         void OnInvoke();
-        void OnRemoved();
     }
 }

@@ -10,7 +10,7 @@ using dIHook.Objects;
 
 namespace dIHook.Utilities
 {
-    public static class ReflectionHelper
+    internal static class ReflectionHelper
     {
         static ReflectionHelper()
         {
@@ -25,7 +25,7 @@ namespace dIHook.Utilities
         static Type TypeRemoveHook;
         static Type TypeIHook;
 
-        public static bool GetAttributeIfAny<T>(int frameNumber = 2) where T : HookAttribute
+        internal static bool GetAttributeIfAny<T>(int frameNumber = 2) where T : HookAttribute
         {
             // get call stack
             StackTrace stackTrace = new StackTrace();
@@ -39,8 +39,9 @@ namespace dIHook.Utilities
                 return false;
         }
 
-        public static List<X> GetAttributeHookType<T, X>(int frameNumber = 2) where T : HookAttribute 
-                                                                              where X : IHook
+        internal static List<X> GetAttributeHookType<T, X>(int frameNumber = 2)
+            where T : HookAttribute
+            where X : IHook
         {
             // get call stack
             StackTrace stackTrace = new StackTrace();
@@ -49,33 +50,28 @@ namespace dIHook.Utilities
             List<X> hooks = new List<X>();
 
             Type TypeT = typeof(T);
-            bool isAddHook = TypeT == TypeAddHook;
-            bool isRemoveHook = TypeT == TypeRemoveHook;
-
             var attributes = callingMethodInfo.GetCustomAttributes(typeof(T), true);
 
             if (attributes != null && attributes.Length > 0) // some ignore attribute found
             {
                 foreach (var attribute in attributes)
                 {
-                    if (isAddHook)
+                    if (attribute is AddHookType)
                     {
-                        var addHook = (AddHookType)attributes[0];
+                        var addHook = (AddHookType)attribute;
                         if (addHook.HookType.GetInterface("IHook", false) == null)
                             throw new InvalidCastException("AddHook attribute has a non IHook type in method:" + callingMethodInfo.Name);
 
                         var hookObject = Activator.CreateInstance(addHook.HookType);
-
                         hooks.Add((X)hookObject);
                     }
-                    else if (isRemoveHook)
+                    else if (attribute is RemoveHookType)
                     {
-                        var removeHook = (RemoveHookType)attributes[0];
+                        var removeHook = (RemoveHookType)attribute;
                         if (removeHook.HookType.GetInterface("IHook", false) == null)
                             throw new InvalidCastException("RemoveHook attribute has a non IHook type in method:" + callingMethodInfo.Name);
 
                         var hookObject = Activator.CreateInstance(removeHook.HookType);
-
                         hooks.Add((X)hookObject);
                     }
                 }
@@ -84,7 +80,7 @@ namespace dIHook.Utilities
             return hooks;
         }
 
-        public static List<Lazy<X>> GetAttributeHookTypeLazy<T, X>(int frameNumber = 2)
+        internal static List<Lazy<X>> GetAttributeHookTypeLazy<T, X>(int frameNumber = 2)
             where T : HookAttribute
             where X : IHook
         {
@@ -95,34 +91,25 @@ namespace dIHook.Utilities
             List<Lazy<X>> hooks = new List<Lazy<X>>();
 
             Type TypeT = typeof(T);
-            bool isAddHook = TypeT == TypeAddHook;
-            bool isRemoveHook = TypeT == TypeRemoveHook;
-
             var attributes = callingMethodInfo.GetCustomAttributes(typeof(T), true);
 
             if (attributes != null && attributes.Length > 0) // some ignore attribute found
             {
                 foreach (var attribute in attributes)
                 {
-                    if (isAddHook)
+                    if (attribute is AddHookType)
                     {
-                        var addHook = (AddHookType)attributes[0];
+                        var addHook = (AddHookType)attribute;
                         if (addHook.HookType.GetInterface("IHook", false) == null)
                             throw new InvalidCastException("AddHook attribute has a non IHook type in method:" + callingMethodInfo.Name);
-
-                        var hookObject = Activator.CreateInstance(addHook.HookType);
-
-                        hooks.Add(new Lazy<X>(() => { return (X)hookObject; }));
+                        hooks.Add(new Lazy<X>(() => { return (X)Activator.CreateInstance(addHook.HookType); }));
                     }
-                    else if (isRemoveHook)
+                    else if (attribute is RemoveHookType)
                     {
-                        var removeHook = (RemoveHookType)attributes[0];
+                        var removeHook = (RemoveHookType)attribute;
                         if (removeHook.HookType.GetInterface("IHook", false) == null)
                             throw new InvalidCastException("RemoveHook attribute has a non IHook type in method:" + callingMethodInfo.Name);
-
-                        var hookObject = Activator.CreateInstance(removeHook.HookType);
-
-                        hooks.Add(new Lazy<X>(() => { return (X)hookObject; }));
+                        hooks.Add(new Lazy<X>(() => { return (X)Activator.CreateInstance(removeHook.HookType); ; }));
                     }
                 }
             }
@@ -130,7 +117,7 @@ namespace dIHook.Utilities
             return hooks;
         }
 
-        public static List<T> GetAttributeOfType<T>(int frameNumber = 2) where T : HookAttribute
+        internal static List<T> GetAttributeOfType<T>(int frameNumber = 2) where T : HookAttribute
         {
             Type typeT = typeof(T);
 
@@ -144,6 +131,29 @@ namespace dIHook.Utilities
                 return attributes.Cast<T>().ToList();
 
             return new List<T>();
+        }
+
+        internal static bool HasIdentifierAttribute(this Type type)
+        {
+            var attributes = type.GetCustomAttributes(typeof(HookIdentifier), true);
+            if (attributes != null && attributes.Length > 0)
+                return true;
+
+            return false;
+        }
+
+        internal static Guid GetHookIdenfier(this Type type)
+        {
+            var attributes = type.GetCustomAttributes(typeof(HookIdentifier), true);
+            if (attributes != null && attributes.Length > 0)
+            {
+                if (attributes[0] is HookIdentifier)
+                {
+                    var hookIdentifierAttribute = attributes[0] as HookIdentifier;
+                    return hookIdentifierAttribute.Id;
+                }
+            }
+            return Guid.Empty;
         }
     }
 }

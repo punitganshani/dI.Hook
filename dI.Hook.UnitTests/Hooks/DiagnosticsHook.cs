@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using dIHook.Builder;
 using dIHook.Objects;
+using dIHook.Objects.Attributes;
 
 namespace dIHook.UnitTests.Hooks
 {
+    [HookIdentifier("CB75FCCF-593B-4BCF-871B-298087CDE741")]
     public class DiagnosticsHook : IHook
     {
         public string Name { get; set; }
