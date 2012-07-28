@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dI.Hook", "dI.Hook\dI.Hook.csproj", "{6822C58A-20A7-44B9-A677-832F0B84FCBC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dI.Hook.UnitTests", "dI.Hook.UnitTests\dI.Hook.UnitTests.csproj", "{DA6061BB-3FF8-4705-A4C8-B52673D3CC44}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6822C58A-20A7-44B9-A677-832F0B84FCBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6822C58A-20A7-44B9-A677-832F0B84FCBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6822C58A-20A7-44B9-A677-832F0B84FCBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6822C58A-20A7-44B9-A677-832F0B84FCBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA6061BB-3FF8-4705-A4C8-B52673D3CC44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA6061BB-3FF8-4705-A4C8-B52673D3CC44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA6061BB-3FF8-4705-A4C8-B52673D3CC44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA6061BB-3FF8-4705-A4C8-B52673D3CC44}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
