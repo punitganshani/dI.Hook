@@ -9,7 +9,7 @@ using dIHook.Objects.Attributes;
 namespace dIHook.UnitTests.Hooks
 {
     [HookIdentifier("CB75FCCF-593B-4BCF-871B-298087CDE741")]
-    public class DiagnosticsHook : IHook
+    public class DiagnosticsHook : IHook, IAdditionalInterface
     {
         public string Name { get; set; }
         public Guid Id { get; set; }
@@ -22,13 +22,28 @@ namespace dIHook.UnitTests.Hooks
        
         public void OnInvoke(params object[] inputParams)
         {
-            Console.WriteLine("Hook Called"); 
+            if (inputParams != null && inputParams.Length > 0)
+            {
+                if (inputParams[0] is string && inputParams[0] == "RaiseDiagnosticException")
+                    throw new InvalidOperationException("Exception raised by DiagnosticsHook");
+                Console.WriteLine(String.Format("{0} Hook Called with {1}", Name, inputParams.Length));
+            }
+            else
+                Console.WriteLine("Hook Called");
         }
 
         public void Dispose()
         {
             Name = null;
             Console.WriteLine("Woah! Hook Disposed!"); 
+        }
+
+        public string IQ
+        {
+            get
+            {
+                return "IQ.001";
+            }
         }
     }
 }

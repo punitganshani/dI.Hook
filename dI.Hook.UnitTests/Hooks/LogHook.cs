@@ -16,18 +16,25 @@ namespace dIHook.UnitTests.Hooks
         public LogHook()
         {
             Name = "LogHook";
-            Id = new Guid("B3D75F63-F7DA-4939-8777-1A354202B9D2"); 
+            Id = new Guid("B3D75F63-F7DA-4939-8777-1A354202B9D2");
         }
 
         public void OnInvoke(params object[] inputParams)
         {
-            Console.WriteLine("Hook Called"); 
+            if (inputParams != null && inputParams.Length > 0)
+            {
+                if (inputParams[0] is string && inputParams[0] == "RaiseLogException")
+                    throw new InvalidOperationException("Exception raised by LogHook");
+                Console.WriteLine(String.Format("{0} Hook Called with {1}", Name, inputParams.Length));
+            }
+            else
+                Console.WriteLine("Hook Called");
         }
 
         public void Dispose()
         {
             Name = null;
-            Console.WriteLine("Woah! Hook Disposed!"); 
+            Console.WriteLine("Woah! Hook Disposed!");
         }
     }
 }
