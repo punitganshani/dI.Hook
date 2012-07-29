@@ -93,30 +93,22 @@ namespace dIHook.Builder
         }
         #endregion
 
-        #region Refresh
-        public void Rebuild()
-        {
-            this.Add(ReflectionHelper.GetAttributeHookType<AddHookType, T>());
-            this.Remove(ReflectionHelper.GetAttributeHookType<RemoveHookType, T>());
-        }
-        #endregion
-
         #region Invoke Hooks
-        public int InvokeAll()
+        public int InvokeAll(params object[] inputParams)
         {
             List<T> hookForThisInstance = HookExtensions.GetHooksForCurrentMethod(this);
 
             int count = 0;
             foreach (var hook in hookForThisInstance)
             {
-                hook.OnInvoke();
+                hook.OnInvoke(inputParams);
                 count++;
             }
 
             return count;
         }
 
-        public int InvokeWhere(Func<T, bool> predicate)
+        public int InvokeWhere(Func<T, bool> predicate, params object[] inputParams)
         {
             List<T> hookForThisInstance = HookExtensions.GetHooksForCurrentMethod(this);
             int count = 0;
@@ -125,7 +117,7 @@ namespace dIHook.Builder
                 // If predicate evaluates to 'true' execute the OnInvoke method
                 if (predicate.Invoke(hook))
                 {
-                    hook.OnInvoke();
+                    hook.OnInvoke(inputParams);
                     count++;
                 }
             }
@@ -133,7 +125,7 @@ namespace dIHook.Builder
             return count;
         }
 
-        public int InvokeWhen(Func<bool> predicate)
+        public int InvokeWhen(Func<bool> predicate, params object[] inputParams)
         {
             List<T> hookForThisInstance = HookExtensions.GetHooksForCurrentMethod(this);
             int count = 0;
@@ -142,7 +134,7 @@ namespace dIHook.Builder
             {
                 foreach (var hook in hookForThisInstance)
                 {
-                    hook.OnInvoke();
+                    hook.OnInvoke(inputParams);
                     count++;
                 }
             }
@@ -150,7 +142,7 @@ namespace dIHook.Builder
             return count;
         }
 
-        public int InvokeWhen(Func<bool> predicate, Func<T, bool> hookPredicate)
+        public int InvokeWhen(Func<bool> predicate, Func<T, bool> hookPredicate, params object[] inputParams)
         {
             List<T> hookForThisInstance = HookExtensions.GetHooksForCurrentMethod(this);
             int count = 0;
@@ -161,7 +153,7 @@ namespace dIHook.Builder
                 {
                     if (hookPredicate.Invoke(hook))
                     {
-                        hook.OnInvoke();
+                        hook.OnInvoke(inputParams);
                         count++;
                     }
                 }

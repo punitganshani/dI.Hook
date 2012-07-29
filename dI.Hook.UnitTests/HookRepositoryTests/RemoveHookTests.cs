@@ -104,5 +104,12 @@ namespace dIHook.UnitTests.HookRepositoryTests
 
             Assert.AreEqual(0, hookRepository.Hooks.Length);
         }
+
+        [TestMethod]
+        public void Test_Lazy_RemoveAll()
+        {
+            hookRepository.RemoveAll();
+            Assert.AreEqual(0, hookRepository.Hooks.Length);
+        }
     }
 }

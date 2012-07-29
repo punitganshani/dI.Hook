@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("dIHook")]
-[assembly: AssemblyDescription("dIHook is a IoC Container and Dependency Injection Resolver.")]
+[assembly: AssemblyTitle("dI.Hook")]
+[assembly: AssemblyDescription("dI.Hook is a Hook Repository and Invocation Engine")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Punit Ganshani")]
-[assembly: AssemblyProduct("dIHook")]
+[assembly: AssemblyProduct("dI.Hook")]
 [assembly: AssemblyCopyright("Copyright © Punit Ganshani 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

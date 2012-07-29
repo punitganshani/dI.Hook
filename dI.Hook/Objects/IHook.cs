@@ -10,6 +10,6 @@ namespace dIHook.Objects
         string Name { get; set; }
         Guid Id { get; set; }
 
-        void OnInvoke();
+        void OnInvoke(params object[] inputParams);
     }
 }

@@ -7,7 +7,7 @@ using dIHook.Objects;
 
 namespace dIHook.Utilities
 {
-    public class LazyDictionary<T> : Dictionary<Guid, Lazy<T>>, IDisposable
+    internal class LazyDictionary<T> : Dictionary<Guid, Lazy<T>>, IDisposable
                                     where T : IHook
     {
         public void Add(Type type)

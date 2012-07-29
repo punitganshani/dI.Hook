@@ -18,21 +18,11 @@ namespace dIHook.UnitTests.Hooks
             Name = "LogHook";
             Id = new Guid("B3D75F63-F7DA-4939-8777-1A354202B9D2"); 
         }
-        public void OnAdded()
-        {
-            Console.WriteLine("Added into repository"); 
-        }
 
-        public void OnInvoke()
+        public void OnInvoke(params object[] inputParams)
         {
             Console.WriteLine("Hook Called"); 
         }
-
-        public void OnRemoved()
-        {
-            Console.WriteLine("Hook Removed from Repository"); 
-        }
-
 
         public void Dispose()
         {

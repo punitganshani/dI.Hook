@@ -8,12 +8,12 @@ using dIHook.Objects.Attributes;
 
 namespace dIHook.Utilities
 {
-    public class HookDictionary<T> : Dictionary<Guid, T>, IDisposable
+    internal class HookDictionary<T> : Dictionary<Guid, T>, IDisposable
                                     where T : IHook
     {
         private Type _typeT;
 
-        public HookDictionary()
+        internal HookDictionary()
         {
             _typeT = typeof(T);
         }

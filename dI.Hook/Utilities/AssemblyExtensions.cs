@@ -8,9 +8,9 @@ using dIHook.Objects;
 
 namespace dIHook.Utilities
 {
-    public static class AssemblyExtensions
+    internal static class AssemblyExtensions
     {
-        public static List<T> GetHooks<T>(this Assembly assembly, Func<T, bool> predicate) where T : IHook
+        internal static List<T> GetHooks<T>(this Assembly assembly, Func<T, bool> predicate) where T : IHook
         {
             List<T> hooks = new List<T>();
 
@@ -34,7 +34,7 @@ namespace dIHook.Utilities
             return hooks;
         }
 
-        public static List<Lazy<T>> GetHooksLazy<T>(this Assembly assembly, Func<T, bool> predicate) where T : IHook
+        internal static List<Lazy<T>> GetHooksLazy<T>(this Assembly assembly, Func<T, bool> predicate) where T : IHook
         {
             List<Lazy<T>> hooks = new List<Lazy<T>>();
 

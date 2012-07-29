@@ -5,15 +5,15 @@ using System.Text;
 
 namespace dIHook.Utilities
 {
-    public static class ArgumentHelper
+    internal static class ArgumentHelper
     {
-        public static void ValidateNotNull<T>(T value, string propertyName)
+        internal static void ValidateNotNull<T>(T value, string propertyName)
         {
             if (value == null)
                 throw new ArgumentNullException(propertyName);
         }
 
-        public static void ValidateIsEqual<T>(T existingValue, T expectedValue, string propertyName)
+        internal static void ValidateIsEqual<T>(T existingValue, T expectedValue, string propertyName)
         {
             if (existingValue == null)
                 throw new ArgumentNullException(propertyName);

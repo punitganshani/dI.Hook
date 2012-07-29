@@ -19,21 +19,12 @@ namespace dIHook.UnitTests.Hooks
             Name = "DiagnosticsHook";
             Id = new Guid("CB75FCCF-593B-4BCF-871B-298087CDE741");
         }
-        public void OnAdded()
-        {
-            Console.WriteLine("Added into repository"); 
-        }
-
-        public void OnInvoke()
+       
+        public void OnInvoke(params object[] inputParams)
         {
             Console.WriteLine("Hook Called"); 
         }
 
-        public void OnRemoved()
-        {
-            Console.WriteLine("Hook Removed from Repository"); 
-        }
-        
         public void Dispose()
         {
             Name = null;

@@ -87,8 +87,8 @@ namespace dIHook.UnitTests.LazyHookRepositoryTests
         [AddHookType(typeof(LogHook))]
         public void Test_Lazy_AddHookByAttribute()
         {
-            hookRepository.Rebuild();
-            Assert.AreEqual(1, hookRepository.Hooks.Length);
+            hookRepository.RemoveAll();
+            Assert.AreEqual(0, hookRepository.Hooks.Length);
         }
 
     }

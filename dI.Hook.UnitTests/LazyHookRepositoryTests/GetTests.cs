@@ -22,7 +22,7 @@ namespace dIHook.UnitTests.LazyHookRepositoryTests
         [TestMethod]
         public void Test_Lazy_GetHookByType()
         {
-            var hooksRetrieved = hookRepository.Get(x => x.GetType() == typeof(LogHook));
+            var hooksRetrieved = hookRepository.Get(typeof(LogHook));
             Assert.AreEqual(1, hooksRetrieved.Length);
         }
 

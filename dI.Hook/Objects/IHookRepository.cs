@@ -11,11 +11,14 @@ namespace dIHook.Objects
     /// </summary>
     public interface IHookRepository<T> : IDisposable where T: IHook
     {
+        #region Properties
         /// <summary>
         /// Hooks in the repository
         /// </summary>
         T[] Hooks { get; }
+        #endregion
 
+        #region Add Hooks
         /// <summary>
         /// Add a hook object into repository
         /// </summary>
@@ -48,12 +51,9 @@ namespace dIHook.Objects
         /// <param name="op">Basic operations like Equals, Like and NotLike</param>
         /// <param name="searchText">Search text</param>
         void Add(SearchScope scope, SearchBy searchBy, Operator op, string searchText);
+        #endregion
 
-        /// <summary>
-        /// Adds or removes the hooks from the repository mentioned in attributes over the calling method
-        /// </summary>
-        void Rebuild();
-
+        #region Load Configuration
         /// <summary>
         /// Load repository and hooks from a configuration file
         /// </summary>
@@ -61,35 +61,43 @@ namespace dIHook.Objects
         /// <param name="repositoryName">Repository Name</param>
         /// <param name="throwExceptionOnError">If true, throws error on any exception occured while loading configuration</param>
         void LoadConfiguration(string sectionName = "dIHookConfiguration", string repositoryName = "default", bool throwExceptionOnError = true);
+        #endregion
 
+        #region Invoke
         /// <summary>
         /// Invoke all the hooks int the repository.  If any of the hook execution, method OnInvoke(), fails other hooks are not executed.
         /// </summary>
         /// <returns>Return number of hooks invoked successfully</returns>
-        int InvokeAll();
+        /// <param name="inputParams">Parameters to the OnInvoke of a hook</param>
+        int InvokeAll(params object[] inputParams);
 
         /// <summary>
         /// Invoke hooks that satisfy the condition mentioned in the predicate.
         /// </summary>
         /// <param name="predicate">Search criteria. If true for a hook, the OnInvoke() method of that hook will be invoked</param>
         /// <returns>Return number of hooks invoked successfully</returns>
-        int InvokeWhere(Func<T, bool> predicate);
+        /// <param name="inputParams">Parameters to the OnInvoke of a hook</param>
+        int InvokeWhere(Func<T, bool> predicate, params object[] inputParams);
 
         /// <summary>
         /// Invoke hooks only if the predicate condition is true.
         /// </summary>
         /// <param name="predicate">Search criteria. If true, the OnInvoke() method of all the hooks in repository will be invoked</param>
         /// <returns>Return number of hooks invoked successfully</returns>
-        int InvokeWhen(Func<bool> predicate);
+        /// <param name="inputParams">Parameters to the OnInvoke of a hook</param>
+        int InvokeWhen(Func<bool> predicate, params object[] inputParams);
 
         /// <summary>
         /// Invoke hooks only if the predicate and hook predicate condition are true.
         /// </summary>
         /// <param name="predicate">Search criteria that is not specific to a hook</param>
         /// <param name="hookPredicate">Search criteria that is specific to a hook</param>
+        /// <param name="inputParams">Parameters to the OnInvoke of a hook</param>
         /// <returns>Return number of hooks invoked successfully</returns>
-        int InvokeWhen(Func<bool> predicate, Func<T, bool> hookPredicate);
+        int InvokeWhen(Func<bool> predicate, Func<T, bool> hookPredicate, params object[] inputParams);
+        #endregion        
 
+        #region Remove Hooks
         /// <summary>
         /// Removes all hooks from repository
         /// </summary>
@@ -118,7 +126,9 @@ namespace dIHook.Objects
         /// </summary>
         /// <typeparam name="T">Hook Type</typeparam>
         void Remove(Type type);
+        #endregion
 
+        #region Get Hook Instance
         /// <summary>
         /// Retrieves all hooks that meet the search criteria
         /// </summary>
@@ -132,5 +142,6 @@ namespace dIHook.Objects
         /// <param name="type">Type of Hook</param>
         /// <returns>Array of hook objects</returns>
         T[] Get(Type type);
+        #endregion
     }
 }

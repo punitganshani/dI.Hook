@@ -83,12 +83,6 @@ namespace dIHook.Builder
             }
         }
 
-        public void Rebuild()
-        {
-            this.Add(ReflectionHelper.GetAttributeHookType<AddHookType, T>());
-            this.Remove(ReflectionHelper.GetAttributeHookType<RemoveHookType, T>());
-        }
-
         public void LoadConfiguration(string sectionName = "repositories", string repositoryName = "default", bool throwExceptionOnError = true)
         {
             try
@@ -127,21 +121,21 @@ namespace dIHook.Builder
             }
         }
 
-        public int InvokeAll()
+        public int InvokeAll(params object[] inputParams)
         {
             List<Lazy<T>> hookForThisInstance = HookExtensions.GetHooksForCurrentMethodLazy(this);
 
             int count = 0;
             foreach (var hook in hookForThisInstance)
             {
-                hook.Value.OnInvoke();
+                hook.Value.OnInvoke(inputParams);
                 count++;
             }
 
             return count;
         }
 
-        public int InvokeWhere(Func<T, bool> predicate)
+        public int InvokeWhere(Func<T, bool> predicate, params object[] inputParams)
         {
             List<Lazy<T>> hookForThisInstance = HookExtensions.GetHooksForCurrentMethodLazy(this);
 
@@ -151,7 +145,7 @@ namespace dIHook.Builder
                 // If predicate evaluates to 'true' execute the OnInvoke method
                 if (predicate.Invoke(hook.Value))
                 {
-                    hook.Value.OnInvoke();
+                    hook.Value.OnInvoke(inputParams);
                     count++;
                 }
             }
@@ -159,7 +153,7 @@ namespace dIHook.Builder
             return count;
         }
 
-        public int InvokeWhen(Func<bool> predicate)
+        public int InvokeWhen(Func<bool> predicate, params object[] inputParams)
         {
             List<Lazy<T>> hookForThisInstance = HookExtensions.GetHooksForCurrentMethodLazy(this);
 
@@ -169,7 +163,7 @@ namespace dIHook.Builder
             {
                 foreach (var hook in hookForThisInstance)
                 {
-                    hook.Value.OnInvoke();
+                    hook.Value.OnInvoke(inputParams);
                     count++;
                 }
             }
@@ -177,7 +171,7 @@ namespace dIHook.Builder
             return count;
         }
 
-        public int InvokeWhen(Func<bool> predicate, Func<T, bool> hookPredicate)
+        public int InvokeWhen(Func<bool> predicate, Func<T, bool> hookPredicate, params object[] inputParams)
         {
             List<Lazy<T>> hookForThisInstance = HookExtensions.GetHooksForCurrentMethodLazy(this);
 
@@ -189,7 +183,7 @@ namespace dIHook.Builder
                 {
                     if (hookPredicate.Invoke(hook.Value))
                     {
-                        hook.Value.OnInvoke();
+                        hook.Value.OnInvoke(inputParams);
                         count++;
                     }
                 }
@@ -248,7 +242,7 @@ namespace dIHook.Builder
             List<T> hookObjects = new List<T>();
             foreach (var hook in hookForThisInstance)
             {
-                if (hook.GetType() == type)
+                if (hook.Value.GetType() == type)
                     hookObjects.Add(hook.Value);
             }
             return hookObjects.ToArray();

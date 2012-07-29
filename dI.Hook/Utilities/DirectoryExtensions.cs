@@ -7,9 +7,9 @@ using System.Text;
 
 namespace dIHook.Utilities
 {
-    public static class DirectoryExtensions
+    internal static class DirectoryExtensions
     {
-        public static  List<Assembly> GetAssemblies(string path, string filter)
+        internal static List<Assembly> GetAssemblies(string path, string filter)
         {
             List<Assembly> assemblies = new List<Assembly>();
             string[] files = Directory.GetFiles(Environment.CurrentDirectory, filter);
