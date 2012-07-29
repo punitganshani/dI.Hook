@@ -54,12 +54,14 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Helper\HookHelper.cs" />
+    <Compile Include="HookRepositoryTests\InvokeParallelTest.cs" />
     <Compile Include="HookRepositoryTests\InvokeTest.cs" />
     <Compile Include="Hooks\DiagnosticsHook.cs" />
     <Compile Include="Hooks\IAdditionalInterface.cs" />
     <Compile Include="Hooks\LogHook.cs" />
     <Compile Include="LazyHookRepositoryTests\AddHookTests.cs" />
     <Compile Include="LazyHookRepositoryTests\GetTests.cs" />
+    <Compile Include="LazyHookRepositoryTests\InvokeParallelTest.cs" />
     <Compile Include="LazyHookRepositoryTests\InvokeTest.cs" />
     <Compile Include="LazyHookRepositoryTests\LoadConfigTests.cs" />
     <Compile Include="LazyHookRepositoryTests\RemoveHookTests.cs" />

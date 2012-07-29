@@ -97,6 +97,40 @@ namespace dIHook.Objects
         int InvokeWhen(Func<bool> predicate, Func<T, bool> hookPredicate, params object[] inputParams);
         #endregion        
 
+        #region InvokeParallel
+        /// <summary>
+        /// Invoke all the hooks int the repository.  If any of the hook execution, method OnInvoke(), fails other hooks are not executed.
+        /// </summary>
+        /// <returns>Return number of hooks invoked successfully</returns>
+        /// <param name="inputParams">Parameters to the OnInvoke of a hook</param>
+        int InvokeAllAsParallel(params object[] inputParams);
+
+        /// <summary>
+        /// Invoke hooks that satisfy the condition mentioned in the predicate.
+        /// </summary>
+        /// <param name="predicate">Search criteria. If true for a hook, the OnInvoke() method of that hook will be invoked</param>
+        /// <returns>Return number of hooks invoked successfully</returns>
+        /// <param name="inputParams">Parameters to the OnInvoke of a hook</param>
+        int InvokeWhereAsParallel(Func<T, bool> predicate, params object[] inputParams);
+
+        /// <summary>
+        /// Invoke hooks only if the predicate condition is true.
+        /// </summary>
+        /// <param name="predicate">Search criteria. If true, the OnInvoke() method of all the hooks in repository will be invoked</param>
+        /// <returns>Return number of hooks invoked successfully</returns>
+        /// <param name="inputParams">Parameters to the OnInvoke of a hook</param>
+        int InvokeWhenAsParallel(Func<bool> predicate, params object[] inputParams);
+
+        /// <summary>
+        /// Invoke hooks only if the predicate and hook predicate condition are true.
+        /// </summary>
+        /// <param name="predicate">Search criteria that is not specific to a hook</param>
+        /// <param name="hookPredicate">Search criteria that is specific to a hook</param>
+        /// <param name="inputParams">Parameters to the OnInvoke of a hook</param>
+        /// <returns>Return number of hooks invoked successfully</returns>
+        int InvokeWhenAsParallel(Func<bool> predicate, Func<T, bool> hookPredicate, params object[] inputParams);
+        #endregion        
+
         #region Remove Hooks
         /// <summary>
         /// Removes all hooks from repository

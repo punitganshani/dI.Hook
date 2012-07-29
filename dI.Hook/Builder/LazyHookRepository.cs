@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using dIHook.Configuration;
 using dIHook.Objects;
 using dIHook.Objects.Attributes;
@@ -29,6 +30,8 @@ namespace dIHook.Builder
         {
             _hook = new LazyDictionary<T>();
         }
+
+        #region Add Hooks
 
         public void Add(T hook)
         {
@@ -83,6 +86,10 @@ namespace dIHook.Builder
             }
         }
 
+        #endregion
+
+        #region Load Configuration
+
         public void LoadConfiguration(string sectionName = "repositories", string repositoryName = "default", bool throwExceptionOnError = true)
         {
             try
@@ -120,6 +127,10 @@ namespace dIHook.Builder
                 if (throwExceptionOnError) throw;
             }
         }
+
+        #endregion
+
+        #region Invoke
 
         public int InvokeAll(params object[] inputParams)
         {
@@ -192,6 +203,85 @@ namespace dIHook.Builder
             return count;
         }
 
+        #endregion
+
+        #region Invoke As Parallel
+
+        public int InvokeAllAsParallel(params object[] inputParams)
+        {
+            List<Lazy<T>> hookForThisInstance = HookExtensions.GetHooksForCurrentMethodLazy(this);
+
+            int count = 0;
+            Parallel.ForEach(hookForThisInstance, hook =>
+            {
+                hook.Value.OnInvoke(inputParams);
+                count++;
+            });
+
+            return count;
+        }
+
+        public int InvokeWhereAsParallel(Func<T, bool> predicate, params object[] inputParams)
+        {
+            List<Lazy<T>> hookForThisInstance = HookExtensions.GetHooksForCurrentMethodLazy(this);
+
+            int count = 0;
+            Parallel.ForEach(hookForThisInstance, hook =>
+            {
+                // If predicate evaluates to 'true' execute the OnInvoke method
+                if (predicate.Invoke(hook.Value))
+                {
+                    hook.Value.OnInvoke(inputParams);
+                    count++;
+                }
+            });
+
+            return count;
+        }
+
+        public int InvokeWhenAsParallel(Func<bool> predicate, params object[] inputParams)
+        {
+            List<Lazy<T>> hookForThisInstance = HookExtensions.GetHooksForCurrentMethodLazy(this);
+
+            int count = 0;
+            // If predicate evaluates to 'true' execute the OnInvoke method
+            if (predicate.Invoke())
+            {
+                Parallel.ForEach(hookForThisInstance, hook =>
+                {
+                    hook.Value.OnInvoke(inputParams);
+                    count++;
+                });
+            }
+
+            return count;
+        }
+
+        public int InvokeWhenAsParallel(Func<bool> predicate, Func<T, bool> hookPredicate, params object[] inputParams)
+        {
+            List<Lazy<T>> hookForThisInstance = HookExtensions.GetHooksForCurrentMethodLazy(this);
+
+            int count = 0;
+            // If predicate evaluates to 'true' execute the OnInvoke method
+            if (predicate.Invoke())
+            {
+                Parallel.ForEach(hookForThisInstance, hook =>
+                {
+                    if (hookPredicate.Invoke(hook.Value))
+                    {
+                        hook.Value.OnInvoke(inputParams);
+                        count++;
+                    }
+                });
+            }
+
+            return count;
+        }
+
+        #endregion
+
+        #region Remove
+
         public void RemoveAll()
         {
             _hook.ClearAll();
@@ -221,6 +311,10 @@ namespace dIHook.Builder
             _hook.Remove(objT);
         }
 
+        #endregion
+
+        #region Get
+
         public T[] Get(Func<T, bool> predicate)
         {
             List<Lazy<T>> hookForThisInstance = HookExtensions.GetHooksForCurrentMethodLazy(this);
@@ -247,6 +341,8 @@ namespace dIHook.Builder
             }
             return hookObjects.ToArray();
         }
+
+        #endregion
 
         public void Dispose()
         {

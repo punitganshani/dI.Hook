@@ -11,6 +11,7 @@ using dIHook.Objects.Attributes;
 using dIHook.Configuration;
 using dIHook.Objects;
 using dIHook.Utilities;
+using System.Threading.Tasks;
 
 namespace dIHook.Builder
 {
@@ -157,6 +158,76 @@ namespace dIHook.Builder
                         count++;
                     }
                 }
+            }
+
+            return count;
+        }
+        #endregion
+
+        #region Invoke Hooks As Parallel
+        public int InvokeAllAsParallel(params object[] inputParams)
+        {
+            List<T> hookForThisInstance = HookExtensions.GetHooksForCurrentMethod(this);
+
+            int count = 0;
+            Parallel.ForEach(hookForThisInstance, hook =>
+            {
+                hook.OnInvoke(inputParams);
+                count++;
+            });
+
+            return count;
+        }
+
+        public int InvokeWhereAsParallel(Func<T, bool> predicate, params object[] inputParams)
+        {
+            List<T> hookForThisInstance = HookExtensions.GetHooksForCurrentMethod(this);
+            int count = 0;
+            Parallel.ForEach(hookForThisInstance, hook =>
+            {
+                // If predicate evaluates to 'true' execute the OnInvoke method
+                if (predicate.Invoke(hook))
+                {
+                    hook.OnInvoke(inputParams);
+                    count++;
+                }
+            });
+
+            return count;
+        }
+
+        public int InvokeWhenAsParallel(Func<bool> predicate, params object[] inputParams)
+        {
+            List<T> hookForThisInstance = HookExtensions.GetHooksForCurrentMethod(this);
+            int count = 0;
+            // If predicate evaluates to 'true' execute the OnInvoke method
+            if (predicate.Invoke())
+            {
+                Parallel.ForEach(hookForThisInstance, hook =>
+                {
+                    hook.OnInvoke(inputParams);
+                    count++;
+                });
+            }
+
+            return count;
+        }
+
+        public int InvokeWhenAsParallel(Func<bool> predicate, Func<T, bool> hookPredicate, params object[] inputParams)
+        {
+            List<T> hookForThisInstance = HookExtensions.GetHooksForCurrentMethod(this);
+            int count = 0;
+            // If predicate evaluates to 'true' execute the OnInvoke method
+            if (predicate.Invoke())
+            {
+                Parallel.ForEach(hookForThisInstance, hook =>
+                {
+                    if (hookPredicate.Invoke(hook))
+                    {
+                        hook.OnInvoke(inputParams);
+                        count++;
+                    }
+                });
             }
 
             return count;
