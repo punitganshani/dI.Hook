@@ -53,7 +53,13 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ContainerTests\ContainerTests.cs" />
+    <Compile Include="Helper\ECommerce.cs" />
     <Compile Include="Helper\HookHelper.cs" />
+    <Compile Include="Helper\IBillingProcessor.cs" />
+    <Compile Include="Helper\ICustomer.cs" />
+    <Compile Include="Helper\INotifier.cs" />
+    <Compile Include="Helper\OnlineOrder.cs" />
     <Compile Include="HookRepositoryTests\InvokeParallelTest.cs" />
     <Compile Include="HookRepositoryTests\InvokeTest.cs" />
     <Compile Include="Hooks\DiagnosticsHook.cs" />

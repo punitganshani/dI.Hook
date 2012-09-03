@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("dI.Hook")]
-[assembly: AssemblyDescription("dI.Hook is a Hook Repository and Invocation Engine")]
+[assembly: AssemblyDescription("dI.Hook is a Hook Repository and Container")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Punit Ganshani")]
 [assembly: AssemblyProduct("dI.Hook")]
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyFileVersion("1.1.0.0")]

@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Builder\LazyHookRepository.cs" />
+    <Compile Include="Containers\Container.cs" />
     <Compile Include="Objects\Attributes\AddHookType.cs" />
     <Compile Include="Objects\Attributes\HookIdentifier.cs" />
     <Compile Include="Objects\Attributes\RemoveHook.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="Objects\Attributes\RemoveHookType.cs" />
     <Compile Include="Builder\HookRepository.cs" />
     <Compile Include="Builder\HookRepositoryFactory.cs" />
+    <Compile Include="Objects\IContainer.cs" />
     <Compile Include="Objects\IHook.cs">
       <SubType>Code</SubType>
     </Compile>
