@@ -3,40 +3,72 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using dIHook.Objects;
+using System.Collections.ObjectModel;
+using dIHook.Utilities;
 
 namespace dIHook.Containers
 {
-    public class Container : IContainer
+    public sealed class Container : IContainer
     {
-        private Dictionary<Type, Lazy<Object>> _objects;
+        private List<ContainerItem> _objects;
 
-        public List<Type> RegisteredTypes
+        public ReadOnlyCollection<Type> Types
         {
             get
             {
-                return _objects.Keys.ToList();
+                return _objects.Select(x => x.InterfaceType).ToList().AsReadOnly();
+            }
+        }
+
+        public ReadOnlyCollection<Guid> Keys
+        {
+            get
+            {
+                return _objects.Select(x => x.Key).ToList().AsReadOnly();
+            }
+        }
+
+        public ReadOnlyCollection<ContainerItem> Collection
+        {
+            get
+            {
+                return _objects.AsReadOnly();
             }
         }
 
         public Container()
         {
-            _objects = new Dictionary<Type, Lazy<object>>();
+            _objects = new List<ContainerItem>();
         }
 
-        public void Register<TClass>(bool throwErrorIfExists = false) where TClass : class
+        #region Register
+
+        public void Register<TClass>() where TClass : class
         {
             Type typeClass = typeof(TClass);
+            Register(typeClass, typeClass, null, false);
+        }
 
-            if (_objects.ContainsKey(typeClass) && throwErrorIfExists)
-                throw new InvalidOperationException("A similar type has already been registered in the container.");
-            else
-            {
-                Register(typeClass, typeClass, false);
-            }
+        public void Register<TClass>(Guid key) where TClass : class
+        {
+            Type typeClass = typeof(TClass);
+            Register(typeClass, typeClass, key, false);
+        }
+
+        public void Register<TInterface>(TInterface objectValue)
+        {
+            Type typeInterface = typeof(TInterface);
+            _objects.Add(new ContainerItem(typeInterface, () => { return objectValue; }));
+        }
+
+        public void Register<TInterface>(Guid key, TInterface objectValue)
+        {
+            Type typeInterface = typeof(TInterface);
+            _objects.Add(new ContainerItem(key, typeInterface, () => { return objectValue; }));
         }
 
         public void Register<TInterface, TImplementation>()
-                            where TImplementation : class
+                    where TImplementation : class, TInterface
         {
             Type typeInterface = typeof(TInterface);
             Type typeImplementation = typeof(TImplementation);
@@ -44,11 +76,90 @@ namespace dIHook.Containers
             Register(typeInterface, typeImplementation);
         }
 
-        private Lazy<Object> GetLazyObjectOfType(Type type, params object[] parameters)
+        public void Register<TInterface, TImplementation>(Guid guid)
+             where TImplementation : class, TInterface
         {
-            if (_objects.ContainsKey(type))
+            Type typeInterface = typeof(TInterface);
+            Type typeImplementation = typeof(TImplementation);
+
+            Register(typeInterface, typeImplementation, guid);
+        }
+
+        #endregion
+
+        #region Resolve
+        public TInterface Resolve<TInterface>() 
+            where TInterface : class
+        {
+            Type typeInterface = typeof(TInterface);
+            if (_objects.Contains(typeInterface))
+                return (TInterface)_objects.GetByType(typeInterface).Value;
+            else
             {
-                return _objects[type];
+                Register<TInterface>(Guid.NewGuid());
+                return (TInterface)_objects.GetByType(typeInterface).Value;
+            }
+        }
+
+        public TInterface Resolve<TInterface>(Guid key)
+            where TInterface : class
+        {
+            Type typeInterface = typeof(TInterface);
+            if (_objects.Contains(typeInterface))
+                return (TInterface)_objects.GetByTypeKey(typeInterface, key).Value;
+            else
+            {
+                Register<TInterface>(key); // all related objects will have same key
+                return (TInterface)_objects.GetByTypeKey(typeInterface, key).Value;
+            }
+        }
+        #endregion
+
+        [Obsolete("Use Resolve method instead of CreateInstance")]
+        public TInterface CreateInstance<TInterface>() 
+            where TInterface : class
+        {
+            Type typeInterface = typeof(TInterface);
+            if (_objects.Contains(typeInterface))
+                return (TInterface)_objects.GetByType(typeInterface).Value;
+            else
+            {
+                Register<TInterface>(Guid.NewGuid()); // all related objects will have same key
+                return (TInterface)_objects.GetByType(typeInterface).Value;
+            }
+        }
+
+        #region Private Methods
+
+        private Lazy<Object> GetOrCreateLazyObjectByKey(Type type, Guid? key, params object[] parameters)
+        {
+            if (_objects.Contains(type))
+            {
+                if (key.HasValue)
+                    return _objects.GetByTypeKey(type, key.Value);
+                else
+                    return _objects.GetByType(type);
+            }
+            else
+            {
+                return new Lazy<object>(() =>
+                {
+                    if (parameters != null && parameters.Length > 0)
+                        return Activator.CreateInstance(type, parameters);
+                    else
+                        return Activator.CreateInstance(type);
+                });
+            }
+        }
+
+        private Lazy<Object> GetOrCreateLazyObjectOfType(Type type, Guid? key, params object[] parameters)
+        {
+            if (_objects.Contains(type))
+            {
+                if (key.HasValue)
+                    return _objects.GetByType(type);
+                else
+                    return _objects.GetByTypeKey(type, key.Value);
             }
             else
             {
@@ -63,11 +174,14 @@ namespace dIHook.Containers
         }
 
 
-        private Object GetObjectOfType(Type type, params object[] parameters)
+        private Object GetOrCreateObjectOfType(Type type, Guid? key, params object[] parameters)
         {
-            if (_objects.ContainsKey(type))
+            if (_objects.Contains(type))
             {
-                return _objects[type].Value;
+                if (key.HasValue)
+                    return _objects.GetByTypeKey(type, key.Value).Value;
+                else
+                    return _objects.GetByType(type).Value;
             }
             else
             {
@@ -78,92 +192,58 @@ namespace dIHook.Containers
             }
         }
 
-        private void Register(Type typeInterface, Type typeImplementation, bool checkInheritance = true)
+        private void Register(Type typeInterface, Type typeImplementation, Guid? key = null, bool checkInheritance = true)
         {
             if (checkInheritance)
             {
+                bool doesImplementInterface = typeImplementation.GetInterface(typeInterface.Name) == null;
+
                 if (!typeInterface.IsInterface)
                     throw new InvalidOperationException("The first parameter to the method Register is not an interface");
 
-                bool doesImplementInterface = typeImplementation.GetInterface(typeInterface.Name) == null;
                 if (doesImplementInterface)
                     throw new InvalidOperationException("The second parameter does not implement interface:" + typeInterface.Name);
             }
-            if (_objects.ContainsKey(typeInterface))
-                throw new InvalidOperationException("A similar type has already been registered in the container.");
-            else
+
+            if (typeImplementation.GetConstructors().Any(x => !x.GetParameters().Any())) // default constructor
             {
-                if (typeImplementation.GetConstructors().Any(x => !x.GetParameters().Any())) // default constructor
+                #region Default Constructor
+                ContainerItem containerItem = null;
+                if (key.HasValue)
+                    containerItem = new ContainerItem(key.Value, typeInterface, GetOrCreateLazyObjectOfType(typeImplementation, key));
+                else
+                    containerItem = new ContainerItem(typeInterface, GetOrCreateLazyObjectOfType(typeImplementation, key));
+                _objects.Add(containerItem);
+                #endregion
+            }
+            else // default constructor not found
+            {
+                #region Overloaded Constructor
+                var constructor = typeImplementation.GetConstructors().FirstOrDefault();
+
+                if (constructor != null)
                 {
-                    _objects.Add(typeInterface, GetLazyObjectOfType(typeImplementation));
-                }
-                else // default constructor not found
-                {
-                    var constructor = typeImplementation.GetConstructors().FirstOrDefault();
-                    if (constructor != null)
+                    var parameters = constructor.GetParameters();
+                    object[] parameterObjects = new object[parameters.Length];
+
+                    for (int i = 0; i < parameters.Length; i++)
                     {
-                        var parameters = constructor.GetParameters();
-                        object[] parameterObjects = new object[parameters.Length];
-
-                        for (int i = 0; i < parameters.Length; i++)
-                        {
-                            Type currentParameterType = parameters[i].ParameterType;
-                            parameterObjects[i] = GetObjectOfType(currentParameterType);
-                        }
-
-                        _objects.Add(typeInterface, new Lazy<object>(() =>
-                        {
-                            return Activator.CreateInstance(typeImplementation, parameterObjects);
-                        }));
+                        Type currentParameterType = parameters[i].ParameterType;
+                        parameterObjects[i] = GetOrCreateObjectOfType(currentParameterType, null);
                     }
+
+                    ContainerItem containerItem = null;
+
+                    if (key.HasValue)
+                        containerItem = new ContainerItem(key.Value, typeInterface, typeImplementation, parameterObjects);
+                    else
+                        containerItem = new ContainerItem(typeInterface, typeImplementation, parameterObjects);
+
+                    _objects.Add(containerItem);
                 }
+                #endregion
             }
         }
-
-        public TInterface CreateInstance<TInterface>() where TInterface : class
-        {
-            Type typeInterface = typeof(TInterface);
-            if (_objects.ContainsKey(typeInterface))
-                return (TInterface)_objects[typeInterface].Value;
-            else
-            {
-                Register<TInterface>();
-                return (TInterface)_objects[typeInterface].Value;
-            }
-        }
-
-        public void Register<TInterface>(TInterface objectValue)
-        {
-            Type typeInterface = typeof(TInterface);
-            if (_objects.ContainsKey(typeInterface))
-                throw new InvalidOperationException("A similar type has already been registered in the container.");
-            else
-            {
-                _objects.Add(typeInterface, new Lazy<object>(()=> { return objectValue; }));
-            }
-        }
+        #endregion
     }
-
-    //class A
-    //{
-    //    public A()
-    //    {
-    //        Container c = new Container();
-    //        c.Register<ICustomer, Customer>();
-    //        c.Register<IBill, Bill>();
-
-
-    //        OrderProcess o = c.CreateInstance<OrderProcess>();
-    //        o.Process();
-    //    }
-
-    //    public class OP
-    //    {
-    //        public OP(ICustomer c, IBill b)
-    //        {
-
-    //        }
-    //    }
-
-    //}
 }
