@@ -48,9 +48,7 @@ namespace dIHook.UnitTests.ContainerTests
         public void Test_RegisterWithResolveExplicitValues()
         {
             Container container = new Container();
-
             BillingProcessor billingProcessor = new BillingProcessor(PaymentType.CreditCard);
-
             container.Register<IBillingProcessor>(billingProcessor);
             container.Register<ICustomer, InternetCustomer>();
             container.Register<INotifier, EmailNotifer>();
@@ -62,8 +60,7 @@ namespace dIHook.UnitTests.ContainerTests
                 Price = 400,
                 Product = "NewProduct"
             };
-
-            ECommerce commerce = container.CreateInstance<ECommerce>();
+            ECommerce commerce = container.Resolve<ECommerce>();
             commerce.Process(onlineOrder);
 
             Assert.IsNotNull(commerce);
