@@ -19,7 +19,7 @@ namespace dIHook.UnitTests.ContainerTests
             container.Register<ICustomer, InternetCustomer>();
             container.Register<INotifier, EmailNotifer>();
 
-            Assert.IsTrue(container.RegisteredTypes.Count == 3);
+            Assert.IsTrue(container.Types.Count == 3);
         }
 
         [TestMethod]

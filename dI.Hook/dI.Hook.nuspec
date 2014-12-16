@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>Punit Ganshani</authors>
+    <owners>Punit Ganshani</owners>
+    <licenseUrl>https://raw.githubusercontent.com/punitganshani/dI.Hook/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/punitganshani/dI.Hook</projectUrl>
+    <iconUrl>http://www.ganshani.com/wp-content/uploads/2012/07/di2.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <copyright>Copyright Punit Ganshani, 2014</copyright>
+    <tags>c# dependency injection container aop repository hook configuration invoke parallel dynamic</tags>
+  </metadata>
+</package>
