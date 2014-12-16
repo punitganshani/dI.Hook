@@ -1,6 +1,8 @@
 dI.Hook - Light-weight IoC and DI engine using AOP
 =======
 
+[![Build status](https://ci.appveyor.com/api/projects/status/d4nlk2wvbflke9dj?svg=true)](https://ci.appveyor.com/project/punitganshani/di-hook)
+
 dI.Hook (pronounced as, du' hʊk) is a **light-weight IoC and DI engine** to define hooks via code or configuration, call them dynamically or conditionally and dispose them when not required.  However, **this is not yet another dependency injection framework**.  It does a lot more than just DI -
 
 * dI.Hook creates a **controlled** repository of hooks instead of searching & instantiating a hook at a time when required 
